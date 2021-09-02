@@ -24,7 +24,7 @@ let setUpSpies = function(versionsCookie, colorsCookie, defaultCookie, isCrawler
   let randomizedIndex = 0;
   return {
     cookieHandler: {
-      get: spyOn(TestBed.get(CookieHandler), 'get').and.callFake(function(cookieName) {
+      get: spyOn(TestBed.inject(CookieHandler), 'get').and.callFake(function(cookieName) {
         switch(cookieName) {
         case 'angular-ab-tests-versions':
           return versionsCookie;
@@ -34,19 +34,19 @@ let setUpSpies = function(versionsCookie, colorsCookie, defaultCookie, isCrawler
           return defaultCookie;
         }
       }),
-      set: spyOn(TestBed.get(CookieHandler), 'set'),
+      set: spyOn(TestBed.inject(CookieHandler), 'set'),
     },
     randomExtractor: {
-      setWeights: spyOn(TestBed.get(RandomExtractor), 'setWeights'),
-      setVersions: spyOn(TestBed.get(RandomExtractor), 'setVersions').and.callFake(function(versions) {
+      setWeights: spyOn(TestBed.inject(RandomExtractor), 'setWeights'),
+      setVersions: spyOn(TestBed.inject(RandomExtractor), 'setVersions').and.callFake(function(versions) {
         randomizedIndex = randomized.indexOf(versions[0]);
       }),
-      run: spyOn(TestBed.get(RandomExtractor), 'run').and.callFake(function(cookieName) {
+      run: spyOn(TestBed.inject(RandomExtractor), 'run').and.callFake(function(cookieName) {
         return randomized[randomizedIndex];
       }),
     },
     crawlerDetector: {
-      isCrawler: spyOn(TestBed.get(CrawlerDetector), 'isCrawler').and.returnValue(!!isCrawler),
+      isCrawler: spyOn(TestBed.inject(CrawlerDetector), 'isCrawler').and.returnValue(!!isCrawler),
     },
   };
 }
