@@ -11,7 +11,7 @@ export class AbTestsService {
   private _tests: { [x: string]: AbTestForRealUser | AbTestForCrawler } = {};
   private _cookieHandler: CookieHandler;
   private _randomExtractor: RandomExtractor;
-  private _defaultScope: string = 'default';
+  private _defaultScope = 'default';
 
   constructor(
     @Inject(CONFIG) configs: AbTestOptions[],
@@ -21,8 +21,8 @@ export class AbTestsService {
   ) {
     this._cookieHandler = cookieHandler;
     this._randomExtractor = randomExtractor;
-    var isCrawler: boolean = crawlerDetector.isCrawler();
-    for (let config of configs) {
+    const isCrawler: boolean = crawlerDetector.isCrawler();
+    for (const config of configs) {
       let scope: string = this._defaultScope;
       if (!!config.scope) {
         scope = config.scope;
@@ -51,7 +51,7 @@ export class AbTestsService {
   }
 
   private getTest(scope?: string): AbTestForRealUser | AbTestForCrawler {
-    let scopeOrDefault = scope || this._defaultScope;
+    const scopeOrDefault = scope || this._defaultScope;
     if (!this._tests[scopeOrDefault]) {
       error('Test with scope <' + scopeOrDefault + '> has not been defined');
     }
@@ -59,11 +59,11 @@ export class AbTestsService {
   }
 
   private filterVersions(versions: string[]): string[] {
-    let resp:string[] = [];
+    const resp: string[] = [];
     if (versions.length < 2) {
       error('You have to provide at least two versions');
     }
-    for (let version of versions) {
+    for (const version of versions) {
       if (resp.indexOf(version) !== -1) {
         error('Version <' + version + '> is repeated in the array of versions [ ' + versions.join(', ') + ' ]');
       }
@@ -80,7 +80,7 @@ export class AbTestsService {
   }
 
   private setupTestForRealUser(scope: string, versions: string[], config: AbTestOptions) {
-    let chosenVersion: string = this.generateVersion({
+    const chosenVersion: string = this.generateVersion({
       versions: versions,
       cookieName: COOKIE_NAMESPACE + '-' + scope,
       domain: config.domain,
@@ -109,11 +109,12 @@ export class AbTestsService {
   }
 
   private processWeights(weights: { [x: string]: number }, versions: string[]): [number, string][] {
-    let processedWeights: [number, string][] = [];
-    let totalWeight: number = 0;
-    let tempVersions: string[] = versions.slice(0);
-    let index: number = -100;
-    for (let key in weights) {
+    const processedWeights: [number, string][] = [];
+    let totalWeight = 0;
+    const tempVersions: string[] = versions.slice(0);
+    let index = -100;
+    // tslint:disable-next-line:forin
+    for (const key in weights) {
       index = tempVersions.indexOf(key);
       if (index === -1) {
         error('Weight associated to <' + key + '> which is not included in versions [ ' + versions.join(', ') + ' ]');
@@ -128,8 +129,8 @@ export class AbTestsService {
     if (totalWeight >= 100) {
       error('Sum of weights is <' + totalWeight + '>, while it should be less than 100');
     }
-    let remainingWeight: number = this.roundFloat((100 - totalWeight) / tempVersions.length);
-    for (let version of tempVersions) {
+    const remainingWeight: number = this.roundFloat((100 - totalWeight) / tempVersions.length);
+    for (const version of tempVersions) {
       totalWeight += remainingWeight;
       processedWeights.push([totalWeight, version]);
     }

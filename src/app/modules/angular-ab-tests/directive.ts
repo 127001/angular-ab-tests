@@ -2,12 +2,13 @@ import { Directive, OnInit, ViewContainerRef, TemplateRef, Input } from '@angula
 import { AbTestsService } from './service';
 
 @Directive({
+  // tslint:disable-next-line:directive-selector
   selector: '[abTestVersion]'
 })
 export class AbTestVersionDirective implements OnInit {
   private _versions: string[];
   private _scope: string;
-  private _forCrawlers: boolean = false;
+  private _forCrawlers = false;
 
   constructor(
     private _service: AbTestsService,

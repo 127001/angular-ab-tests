@@ -20,8 +20,8 @@ export class AbTestForRealUser {
     this._chosenVersion = version;
   }
 
-  shouldRender(versions: string[], forCrawlers: boolean): boolean {
-    for (let version of versions) {
+  shouldRender(versions: string[]): boolean {
+    for (const version of versions) {
       if (this._versions.indexOf(version) === -1) {
         error('Version <' + version + '> has not been declared: [ ' + this._versions.join(', ') + ' ]');
       }
@@ -66,8 +66,8 @@ export class RandomExtractor {
     if (this._weights.length === 0) {
       return this._versions[Math.floor(Math.random() * this._versions.length)];
     }
-    let random: number = Math.random() * 100;
-    for (let weight of this._weights) {
+    const random: number = Math.random() * 100;
+    for (const weight of this._weights) {
       if (random <= weight[0]) {
         return weight[1];
       }
@@ -103,15 +103,15 @@ export class CrawlerDetector extends AbstractUserAgentCrawlerDetector {
 export class CookieHandler {
   public get(name: string): string {
     name = encodeURIComponent(name);
-    let regexp: RegExp = new RegExp('(?:^' + name + '|;\\s*' + name + ')=(.*?)(?:;|$)', 'g');
-    let results = regexp.exec(document.cookie);
+    const regexp: RegExp = new RegExp('(?:^' + name + '|;\\s*' + name + ')=(.*?)(?:;|$)', 'g');
+    const results = regexp.exec(document.cookie);
     return (!results) ? '' : decodeURIComponent(results[1]);
   }
 
   public set(name: string, value: string, domain?: string, expires?: number) {
     let cookieStr = encodeURIComponent(name) + '=' + encodeURIComponent(value) + ';';
     if (expires) {
-      let dtExpires = new Date(new Date().getTime() + expires * 1000 * 60 * 60 * 24);
+      const dtExpires = new Date(new Date().getTime() + expires * 1000 * 60 * 60 * 24);
       cookieStr += 'expires=' + dtExpires.toUTCString() + ';';
     }
     if (domain) {

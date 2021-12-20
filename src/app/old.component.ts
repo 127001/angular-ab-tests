@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges, DoCheck } from '@angular/core';
 
 @Component({
+  // tslint:disable-next-line:component-selector
   selector: 'old-component',
   template: `
     <div style="width:500px;height:100px;background-color:red;margin-bottom:50px">

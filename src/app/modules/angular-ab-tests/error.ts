@@ -1,3 +1,3 @@
 export function error(msg: string) {
-  throw ('AngularAbTests error: ' + msg);
+  throw new Error(('AngularAbTests error: ' + msg));
 }
