@@ -43,9 +43,10 @@ export class AbTestForCrawler {
     return '';
   }
 
-  setVersion(version: string) {}
+  setVersion() {
+  }
 
-  shouldRender(versions: string[], forCrawlers: boolean): boolean {
+  shouldRender (versions: string[], forCrawlers: boolean): boolean {
     return forCrawlers || (!!this._version && versions.indexOf(this._version) !== -1);
   }
 }
@@ -54,16 +55,16 @@ export class RandomExtractor {
   private _weights: [number, string][];
   private _versions: string[];
 
-  setWeights(weights: [number, string][]) {
+  setWeights (weights: [number, string][]) {
     this._weights = weights;
   }
 
-  setVersions(versions: string[]) {
+  setVersions (versions: string[]) {
     this._versions = versions;
   }
 
-  run(): string {
-    if (this._weights.length === 0) {
+  run (): string {
+    if (this._weights.length) {
       return this._versions[Math.floor(Math.random() * this._versions.length)];
     }
     const random: number = Math.random() * 100;
