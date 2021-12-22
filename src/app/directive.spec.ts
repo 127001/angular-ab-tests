@@ -19,13 +19,13 @@ import {CookieHandler, CrawlerDetector, RandomExtractor} from './modules/angular
 })
 class TestAbTestVersionsComponent {}
 
-let setUpSpies = function(versionsCookie, colorsCookie, defaultCookie, isCrawler?) {
-  let randomized = [ 'v1', 'red', 'old' ];
+const setUpSpies = function(versionsCookie, colorsCookie, defaultCookie, isCrawler?) {
+  const randomized = [ 'v1', 'red', 'old' ];
   let randomizedIndex = 0;
   return {
     cookieHandler: {
-      get: spyOn(TestBed.get(CookieHandler), 'get').and.callFake(function(cookieName) {
-        switch(cookieName) {
+      get: spyOn(TestBed.inject(CookieHandler), 'get').and.callFake(function(cookieName) {
+        switch (cookieName) {
         case 'angular-ab-tests-versions':
           return versionsCookie;
         case 'angular-ab-tests-colors':
@@ -34,24 +34,24 @@ let setUpSpies = function(versionsCookie, colorsCookie, defaultCookie, isCrawler
           return defaultCookie;
         }
       }),
-      set: spyOn(TestBed.get(CookieHandler), 'set'),
+      set: spyOn(TestBed.inject(CookieHandler), 'set'),
     },
     randomExtractor: {
-      setWeights: spyOn(TestBed.get(RandomExtractor), 'setWeights'),
-      setVersions: spyOn(TestBed.get(RandomExtractor), 'setVersions').and.callFake(function(versions) {
+      setWeights: spyOn(TestBed.inject(RandomExtractor), 'setWeights'),
+      setVersions: spyOn(TestBed.inject(RandomExtractor), 'setVersions').and.callFake(function(versions) {
         randomizedIndex = randomized.indexOf(versions[0]);
       }),
-      run: spyOn(TestBed.get(RandomExtractor), 'run').and.callFake(function(cookieName) {
+      run: spyOn(TestBed.inject(RandomExtractor), 'run').and.callFake(function(cookieName) {
         return randomized[randomizedIndex];
       }),
     },
     crawlerDetector: {
-      isCrawler: spyOn(TestBed.get(CrawlerDetector), 'isCrawler').and.returnValue(!!isCrawler),
+      isCrawler: spyOn(TestBed.inject(CrawlerDetector), 'isCrawler').and.returnValue(!!isCrawler),
     },
   };
-}
+};
 
-let testCall = {
+const testCall = {
   randomExtractor: {
     versions: function(arg) {
       expect(arg.length).toBe(3);
@@ -98,19 +98,19 @@ let testCall = {
   }
 };
 
-let testCallsSetWeights = function(calls, toExpect) {
+const testCallsSetWeights = function(calls, toExpect) {
   expect(calls.length).toBe(toExpect.length);
-  for (var i = 0; i < toExpect.length; i++) {
+  for (let i = 0; i < toExpect.length; i++) {
     testCall.randomExtractor[toExpect[i]](calls[i].args[0]);
   }
-}
+};
 
-let testCallsSetCookie = function(calls, toExpect) {
+const testCallsSetCookie = function(calls, toExpect) {
   expect(calls.length).toBe(toExpect.length);
-  for (var i = 0; i < toExpect.length; i++) {
+  for (let i = 0; i < toExpect.length; i++) {
     testCall.cookieHandler[toExpect[i]](calls[i].args);
   }
-}
+};
 
 describe('Directive: AbTestVersion', () => {
   let fixture: ComponentFixture<TestAbTestVersionsComponent>;
@@ -124,7 +124,7 @@ describe('Directive: AbTestVersion', () => {
               versions: [ 'v1', 'v2', 'v3' ],
               scope: 'versions',
               expiration: 45,
-              weights: { v1: 45, v3: 100/3 }
+              weights: { v1: 45, v3: 100 / 3 }
             },
             {
               versions: [ 'red', 'green', 'blue' ],
@@ -145,7 +145,7 @@ describe('Directive: AbTestVersion', () => {
   });
 
   it('null null old', () => {
-    let spies = setUpSpies(null, null, 'old');
+    const spies = setUpSpies(null, null, 'old');
     fixture = TestBed.createComponent(TestAbTestVersionsComponent);
     fixture.detectChanges();
     expect(!!fixture.debugElement.query(By.css('.versions-v1-v2'))).toBe(true);
@@ -162,7 +162,7 @@ describe('Directive: AbTestVersion', () => {
   });
 
   it('null null null', () => {
-    let spies = setUpSpies(null, null, null);
+    const spies = setUpSpies(null, null, null);
     fixture = TestBed.createComponent(TestAbTestVersionsComponent);
     fixture.detectChanges();
     expect(!!fixture.debugElement.query(By.css('.versions-v1-v2'))).toBe(true);
@@ -179,7 +179,7 @@ describe('Directive: AbTestVersion', () => {
   });
 
   it('v1 null new', () => {
-    let spies = setUpSpies('v1', null, 'new');
+    const spies = setUpSpies('v1', null, 'new');
     fixture = TestBed.createComponent(TestAbTestVersionsComponent);
     fixture.detectChanges();
     expect(!!fixture.debugElement.query(By.css('.versions-v1-v2'))).toBe(true);
@@ -196,7 +196,7 @@ describe('Directive: AbTestVersion', () => {
   });
 
   it('v2 null null', () => {
-    let spies = setUpSpies('v2', null, null);
+    const spies = setUpSpies('v2', null, null);
     fixture = TestBed.createComponent(TestAbTestVersionsComponent);
     fixture.detectChanges();
     expect(!!fixture.debugElement.query(By.css('.versions-v1-v2'))).toBe(true);
@@ -213,7 +213,7 @@ describe('Directive: AbTestVersion', () => {
   });
 
   it('v3 blue new', () => {
-    let spies = setUpSpies('v3', 'blue', 'new');
+    const spies = setUpSpies('v3', 'blue', 'new');
     fixture = TestBed.createComponent(TestAbTestVersionsComponent);
     fixture.detectChanges();
     expect(!!fixture.debugElement.query(By.css('.versions-v1-v2'))).toBe(false);
@@ -230,7 +230,7 @@ describe('Directive: AbTestVersion', () => {
   });
 
   it('v3 green null', () => {
-    let spies = setUpSpies('v3', 'green', null);
+    const spies = setUpSpies('v3', 'green', null);
     fixture = TestBed.createComponent(TestAbTestVersionsComponent);
     fixture.detectChanges();
     expect(!!fixture.debugElement.query(By.css('.versions-v1-v2'))).toBe(false);
@@ -247,7 +247,7 @@ describe('Directive: AbTestVersion', () => {
   });
 
   it('v2 blue new', () => {
-    let spies = setUpSpies('v2', 'blue', 'new');
+    const spies = setUpSpies('v2', 'blue', 'new');
     fixture = TestBed.createComponent(TestAbTestVersionsComponent);
     fixture.detectChanges();
     expect(!!fixture.debugElement.query(By.css('.versions-v1-v2'))).toBe(true);
@@ -264,7 +264,7 @@ describe('Directive: AbTestVersion', () => {
   });
 
   it('null null old crawler', () => {
-    let spies = setUpSpies(null, null, 'old', true);
+    const spies = setUpSpies(null, null, 'old', true);
     fixture = TestBed.createComponent(TestAbTestVersionsComponent);
     fixture.detectChanges();
     expect(!!fixture.debugElement.query(By.css('.versions-v1-v2'))).toBe(true);
@@ -281,7 +281,7 @@ describe('Directive: AbTestVersion', () => {
   });
 
   it('null null null crawler', () => {
-    let spies = setUpSpies(null, null, null, true);
+    const spies = setUpSpies(null, null, null, true);
     fixture = TestBed.createComponent(TestAbTestVersionsComponent);
     fixture.detectChanges();
     expect(!!fixture.debugElement.query(By.css('.versions-v1-v2'))).toBe(true);
@@ -298,7 +298,7 @@ describe('Directive: AbTestVersion', () => {
   });
 
   it('v1 null new crawler', () => {
-    let spies = setUpSpies('v1', null, 'new', true);
+    const spies = setUpSpies('v1', null, 'new', true);
     fixture = TestBed.createComponent(TestAbTestVersionsComponent);
     fixture.detectChanges();
     expect(!!fixture.debugElement.query(By.css('.versions-v1-v2'))).toBe(true);
@@ -315,7 +315,7 @@ describe('Directive: AbTestVersion', () => {
   });
 
   it('v2 null null crawler', () => {
-    let spies = setUpSpies('v2', null, null, true);
+    const spies = setUpSpies('v2', null, null, true);
     fixture = TestBed.createComponent(TestAbTestVersionsComponent);
     fixture.detectChanges();
     expect(!!fixture.debugElement.query(By.css('.versions-v1-v2'))).toBe(true);
@@ -332,7 +332,7 @@ describe('Directive: AbTestVersion', () => {
   });
 
   it('v3 blue new crawler', () => {
-    let spies = setUpSpies('v3', 'blue', 'new', true);
+    const spies = setUpSpies('v3', 'blue', 'new', true);
     fixture = TestBed.createComponent(TestAbTestVersionsComponent);
     fixture.detectChanges();
     expect(!!fixture.debugElement.query(By.css('.versions-v1-v2'))).toBe(true);
@@ -349,7 +349,7 @@ describe('Directive: AbTestVersion', () => {
   });
 
   it('v3 green null crawler', () => {
-    let spies = setUpSpies('v3', 'green', null, true);
+    const spies = setUpSpies('v3', 'green', null, true);
     fixture = TestBed.createComponent(TestAbTestVersionsComponent);
     fixture.detectChanges();
     expect(!!fixture.debugElement.query(By.css('.versions-v1-v2'))).toBe(true);
@@ -366,7 +366,7 @@ describe('Directive: AbTestVersion', () => {
   });
 
   it('v2 blue new crawler', () => {
-    let spies = setUpSpies('v2', 'blue', 'new', true);
+    const spies = setUpSpies('v2', 'blue', 'new', true);
     fixture = TestBed.createComponent(TestAbTestVersionsComponent);
     fixture.detectChanges();
     expect(!!fixture.debugElement.query(By.css('.versions-v1-v2'))).toBe(true);
